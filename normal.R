@@ -54,6 +54,9 @@ thetapars <- c("a", "b", "sigma")
 ypredpars <- dimnames(posterior)$parameters[4:23]
 
 color_scheme_set("red")
+plot(fit, pars = thetapars)
+plot(fit, pars = ypredpars)
+
 mcmc_intervals(posterior, pars = thetapars)
 mcmc_intervals(posterior, pars = ypredpars)
 

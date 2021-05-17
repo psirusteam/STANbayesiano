@@ -22,7 +22,7 @@ options(width = 90)
 # data and simulated model ----------------------------------------------------------
 
 #' # Generate data
-N <- 20
+N <- 30
 x <- sort(rnorm(N))
 a <- 2
 b <- 3
@@ -42,16 +42,13 @@ fit <- stan("normal.stan",
 #' ## Posterior summary and convergence diagnostics
 print(fit, digits = 2)
 
-
-
 # Plotting the MCMC -------------------------------------------------------
 posterior <- as.array(fit)
 dim(posterior)
 dimnames(posterior)
 
-
 thetapars <- c("a", "b", "sigma")
-ypredpars <- dimnames(posterior)$parameters[4:23]
+ypredpars <- dimnames(posterior)$parameters[4:33]
 
 color_scheme_set("red")
 plot(fit, pars = thetapars)
@@ -135,7 +132,7 @@ mcmc_acf(posterior, pars = thetapars, lags = 10)
 # Graphical posterior predictive checks -----------------------------------
 
 sims <- as.data.frame(fit)
-yrep <- as.matrix(sims[, c(4: 23)])
+yrep <- as.matrix(sims[, c(4: 33)])
 rowsrandom <- sample(nrow(yrep), 20)
 yrep2 <- yrep[rowsrandom, ]
 

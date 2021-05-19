@@ -33,7 +33,7 @@ simple_data <- list(N = N, x = x, y = y, sigma = sigma)
 # STAN fit ----------------------------------------------------------------
 
 #' # Draw from posterior distribution
-#+ results='hide'
+# results='hide'
 fit <- stan("5. modelos lineales/normal.stan", 
             data = simple_data, 
             verbose = TRUE,

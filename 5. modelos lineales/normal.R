@@ -34,7 +34,7 @@ simple_data <- list(N = N, x = x, y = y, sigma = sigma)
 
 #' # Draw from posterior distribution
 #+ results='hide'
-fit <- stan("normal.stan", 
+fit <- stan("5. modelos lineales/normal.stan", 
             data = simple_data, 
             verbose = TRUE,
             iter = 200)
@@ -142,11 +142,20 @@ ppc_dens_overlay(y, yrep2)
 ppc_hist(y, yrep2)
 ppc_ecdf_overlay(y, yrep2)
 
+ppc_intervals(y, yrep2)
+ppc_intervals(y, yrep)
+ppc_ribbon(y, yrep2)
+ppc_ribbon(y, yrep)
+ppc_boxplot(y, yrep2)
+ppc_scatter(y, yrep2)
+
 prop_gzero <- function(x) mean(x >= 0)
 prop_gzero(y) # check proportion of values greater tha zero in y
 ppc_stat(y, yrep, stat = "prop_gzero")
 ppc_stat(y, yrep, stat = "max")
 ppc_stat(y, yrep, stat = "min")
+ppc_stat_2d(y, yrep2)
+ppc_stat(y, yrep2)
 
 
 # Andres' own and inneficient graphs --------------------------------------

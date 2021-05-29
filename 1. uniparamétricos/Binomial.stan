@@ -1,4 +1,4 @@
-// The input data is a vector 'y' of length 'n'.
+// The input dta is a vector 'y' of length 'n'.
 data {
   int<lower=0> n;             //number of experiments
   int<lower=0> m[n]; //number of observations per experiment

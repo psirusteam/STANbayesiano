@@ -1,7 +1,7 @@
 #' ---
 #' title: "Simple Bernoulli Example"
 #' author: Andrés Gutiérrez
-#' date: "29th May 2021"
+#' date: "22th May 2021"
 #' ---
 
 rm(list = ls())

@@ -1,11 +1,8 @@
 #' ---
 #' title: "Simple Bernoulli Example"
 #' author: Andrés Gutiérrez
-#' date: "18th May 2021"
+#' date: "29th May 2021"
 #' ---
-
-#' # Setup
-#+ message=FALSE
 
 rm(list = ls())
 

@@ -21,16 +21,17 @@ options(width = 90)
 # data and simulated model ----------------------------------------------------------
 
 #' # Generate data
-n <- 30
-theta <- 0.5
-y <- rbinom(n, 1, theta)
-sample_data <- list(n = n, y = y)
+n <- 10
+m <- sample.int(n, 30, replace = TRUE)
+theta <- 0.2
+y <- rbinom(n, m, theta)
+sample_data <- list(n = n, m = m, y = y)
 
 # STAN fit ----------------------------------------------------------------
 
 #' # Draw from posterior distribution
 #+ results='hide'
-fit <- stan("1. uniparamétricos/Bernoulli.stan", 
+fit <- stan("1. uniparamétricos/Binomial.stan", 
             data = sample_data)
 
 #' ## Posterior summary and convergence diagnostics
@@ -42,7 +43,7 @@ dim(posterior)
 dimnames(posterior)
 
 thetapars <- c("theta")
-ypredpars <- dimnames(posterior)$parameters[2]
+ypredpars <- dimnames(posterior)$parameters[2:31]
 
 color_scheme_set("red")
 plot(fit, pars = thetapars)
@@ -85,6 +86,7 @@ mcmc_violin(posterior,
 
 color_scheme_set("blue")
 mcmc_trace(posterior, pars = thetapars)
+mcmc_trace(posterior, pars = ypredpars)
 
 color_scheme_set("mix-blue-red")
 mcmc_trace(posterior, pars = thetapars, 
@@ -114,7 +116,7 @@ yrep2 <- as.matrix(yrep[rowsrandom, ])
 
 color_scheme_set("brightblue")
 
-ppc_dens_overlay(y, yrep2)
+ppc_dens_overlay(y, yrep)
 ppc_hist(y, yrep2)
 ppc_ecdf_overlay(y, yrep)
 
@@ -124,6 +126,7 @@ prop_gones <- function(x) mean(x == 1)
 prop_gones(y) # check proportion of values greater tha zero in y
 ppc_stat(y, yrep, stat = "prop_gzero")
 ppc_stat(y, yrep, stat = "prop_gones")
+ppc_stat(y, yrep, stat = "mean")
 ppc_stat(y, yrep, stat = "sd")
 
 # Shiny checks ------------------------------------------------------------

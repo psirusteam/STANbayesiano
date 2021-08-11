@@ -30,7 +30,7 @@ sample_data <- list(n = n, y = y)
 
 #' # Draw from posterior distribution
 #+ results='hide'
-fit <- stan("1. uniparamétricos/Bernoulli.stan", 
+fit <- stan("1. uniparamétricos/Bernoulli.stan",
             data = sample_data)
 
 #' ## Posterior summary and convergence diagnostics

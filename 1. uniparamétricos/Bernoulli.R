@@ -71,7 +71,7 @@ color_scheme_set("green")
 mcmc_hist(posterior, pars = thetapars)
 mcmc_hist(posterior, pars = ypredpars)
 
-color_scheme_set("brightblue")
+color_scheme_set("brightblue") #oe
 mcmc_hist_by_chain(posterior, pars = thetapars)
 mcmc_hist_by_chain(posterior, pars = ypredpars)
 

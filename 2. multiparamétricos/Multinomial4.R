@@ -1,5 +1,5 @@
 #' ---
-#' title: "Simple Multinomial Examplesss"
+#' title: "Simple Multinomial Example"
 #' author: Andrés Gutiérrez
 #' date: "22th May 2021"
 #' ---
@@ -22,31 +22,26 @@ n <- round(runif(n = d, 400,500)) # Tamaño de muestra por dominio
 p <- 3  # Número de categorías
 
 ## parametros de regresión.
-k <- 3 # número de variables regresoras.
-beta <- c(3,5, 20) # coefientes del modelo. 
-X <-  cbind(1, matrix(rbinom(n = (k-1)*d, 40,.5),d,(k-1)))  #variables regresoras 
-
+k <- 2 # número de variables regresoras.
+beta <- matrix(c(1,2,3,4,5,6),p,k)/500 # coefientes del modelo. 
+X <-  cbind(1, matrix(rnorm(d,50,10),d,(k-1)))  #variables regresoras 
 ### Calculando el denominador
-Denominador <- 1 + (crossprod(t(X),(beta)))
+Denominador <- 1 + exp((crossprod(t(X),(beta[1,])))) + 
+                   exp((crossprod(t(X),(beta[2,]))))
 
-
-#################################################
-#' # Generate data
-d <- 10 # número de dominios
-n <- round(runif(n = d, 400,500)) # Tamaño de muestra
-p <- 3  # Número de categorías
-theta <- c(0.2, 0.45, 0.35) # parámetros de éxito 
-theta <- t(rmultinom(n = d, size = 100, prob = theta))
-theta <- theta/rowSums(theta)
-
+# Calculando la matrix y
+theta <- cbind(1/Denominador, 
+              exp((crossprod(t(X),(beta[1,]))))/Denominador,
+              exp((crossprod(t(X),(beta[2,]))))/Denominador)
 rowSums(theta)
 y <- matrix(NA, d,p)
 for(ii in 1:d){
-y[ii,] <- t(rmultinom(n = 1, size = n[ii], prob = theta[ii,]))
+  y[ii,] <- t(rmultinom(n = 1, size = n[ii], prob = theta[ii,]))
 }
 rowSums(y)
 alpha = rep(0.5, 3)
 sample_data <- list(d = d, p = p, y = y, alpha = alpha)
+
 
 # STAN fit ----------------------------------------------------------------
 

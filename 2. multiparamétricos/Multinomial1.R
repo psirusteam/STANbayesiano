@@ -23,9 +23,10 @@ p <- 3  # Número de categorías
 theta <- c(0.2, 0.45, 0.35) # parámetros de éxito 
 sum(theta)
 y <- t(rmultinom(n = n, size = 1, prob = theta))
-#colMeans(y)
+#yagg <- colSums(y)
+alpha = rep(0.5, 3)
 
-sample_data <- list(n = n, p = p, y = y)
+sample_data <- list(n = n, p = p, y = y, alpha = alpha)
 
 # STAN fit ----------------------------------------------------------------
 

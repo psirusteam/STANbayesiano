@@ -1,5 +1,5 @@
 #' ---
-#' title: "Simple Multinomial Example"
+#' title: "Simple Multinomial Examplesss"
 #' author: Andrés Gutiérrez
 #' date: "22th May 2021"
 #' ---

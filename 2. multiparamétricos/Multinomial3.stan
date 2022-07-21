@@ -1,13 +1,12 @@
 data {
-  int<lower=0> d; // número de dominios 
-  int<lower=0> p; // categorías
+  int<lower=1> d; // número de dominios 
+  int<lower=1> p; // categorías
   int y[d, p]; // matriz de datos
-  vector[p] alpha;
+  vector[p] alpha; // hiperparámetros de la prior
 }
 
 parameters {
-  matrix [d,p] theta;// vector de parámetros 
-
+  simplex[p] theta[d];// vector de parámetros 
 }
 
 // transformed parameters {
@@ -17,14 +16,9 @@ parameters {
 
 model {
   for(i in 1:d){
-   theta[i,] ~ dirichlet(alpha);
-   y[i, ] ~ multinomial(theta[i,]); 
+    for(j in 1:p){
+      target += multinomial_lpmf(y[i, ] | theta[i]); 
+      target += dirichlet_lpdf(theta[j] | alpha);
+    }
   }
 }
-
-// generated quantities {
-//   int ypred[k];
-//   int deltapred;
-//   ypred = multinomial_rng(theta, 100);
-//   deltapred = ypred[1] - ypred[2];
-// }

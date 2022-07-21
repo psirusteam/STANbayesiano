@@ -31,28 +31,28 @@ for(ii in 1:d){
 y[ii,] <- t(rmultinom(n = 1, size = n[ii], prob = theta[ii,]))
 }
 rowSums(y)
-alpha = rep(0.5, 3)
+alpha = matrix(rep(0.5, 3), 10, 3)
 sample_data <- list(d = d, p = p, y = y, alpha = alpha)
 
 # STAN fit ----------------------------------------------------------------
 
 #' # Draw from posterior distribution
 #+ results='hide'
-# fit <- stan("2. multiparamétricos/Multinomial.stan", 
-#             data = sample_data)
+fit <- stan("2. multiparamétricos/Multinomial3.stan",
+            data = sample_data)
 
-fit <- cmdstan_model(stan_file = "2. multiparamétricos/Multinomial2.stan",
-                     compile = TRUE)
-
-
-fit_mcmc <- fit$sample(
-  data = sample_data,
-  seed = 123,
-  chains = 4,
-  parallel_chains = 4
-)
-
-fit_mcmc$print("theta")
+# fit <- cmdstan_model(stan_file = "2. multiparamétricos/Multinomial2.stan",
+#                      compile = TRUE)
+# 
+# 
+# fit_mcmc <- fit$sample(
+#   data = sample_data,
+#   seed = 123,
+#   chains = 4,
+#   parallel_chains = 4
+# )
+# 
+# fit_mcmc$print("theta")
 
 #' ## Posterior summary and convergence diagnostics
 print(fit, digits = 2, pars = "theta")

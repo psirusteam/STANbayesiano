@@ -1,34 +1,56 @@
 #' ---
-#' title: "Simple Bernoulli Example"
+#' title: "Simple random slopes Example"
 #' author: Andrés Gutiérrez
-#' date: "22th May 2021"
+#' date: "18th May 2021"
 #' ---
+
+#' # Setup
+#+ message=FALSE
 
 rm(list = ls())
 
-library("rstan")
-library("rstantools")
 library(ggplot2)
-library(tidyverse)
-library(bayesplot)
+library(rstan, quietly=TRUE)
+library(tidyverse,quietly=TRUE)
 
 rstan_options(auto_write = TRUE)
 options(width = 90)
 
 # data and simulated model ----------------------------------------------------------
 
+data(pulp, package="faraway")
+summary(pulp)
+
+ggplot(pulp, aes(x = operator, y = bright)) + 
+  geom_point(position = position_jitter(width = 0.1, height = 0.0))
+
+rstan_options(auto_write = TRUE)
+options(mc.cores = parallel::detectCores())
+set.seed(123)
+
+pulpdat <- list(
+  N = nrow(pulp),
+  J = length(unique(pulp$operator)),
+  response = pulp$bright,
+  predictor = as.numeric(pulp$operator)
+)
+
+rt <- stanc(file="7. mixtos/unavia.stan")
+sm <- stan_model(stanc_ret = rt, verbose=FALSE)
+system.time(fit <- sampling(sm, data=pulpdat))
+fit
+
 #' # Generate data
-n <- 10 # Tamaño de muestra
-m <- sample.int(30, n, replace = TRUE) # Número de ensayos
-theta <- 0.2 # parámetro de éxito 
-y <- rbinom(n, m, theta) # éxitos (hits)
-sample_data <- list(n = n, m = m, y = y)
+n <- 30
+theta <- 0.5
+y <- rbinom(n, 1, theta)
+sample_data <- list(n = n, y = y)
 
 # STAN fit ----------------------------------------------------------------
 
 #' # Draw from posterior distribution
 #+ results='hide'
-fit <- stan("1. uniparamétricos/Binomial.stan", 
+fit <- stan("1. uniparamétricos/Bernoulli.stan",
             data = sample_data)
 
 #' ## Posterior summary and convergence diagnostics
@@ -40,7 +62,7 @@ dim(posterior)
 dimnames(posterior)
 
 thetapars <- c("theta")
-ypredpars <- dimnames(posterior)$parameters[2:31]
+ypredpars <- dimnames(posterior)$parameters[2]
 
 color_scheme_set("red")
 plot(fit, pars = thetapars)
@@ -69,7 +91,7 @@ color_scheme_set("green")
 mcmc_hist(posterior, pars = thetapars)
 mcmc_hist(posterior, pars = ypredpars)
 
-color_scheme_set("brightblue")
+color_scheme_set("brightblue") #oe
 mcmc_hist_by_chain(posterior, pars = thetapars)
 mcmc_hist_by_chain(posterior, pars = ypredpars)
 
@@ -83,7 +105,6 @@ mcmc_violin(posterior,
 
 color_scheme_set("blue")
 mcmc_trace(posterior, pars = thetapars)
-mcmc_trace(posterior, pars = ypredpars)
 
 color_scheme_set("mix-blue-red")
 mcmc_trace(posterior, pars = thetapars, 
@@ -113,7 +134,7 @@ yrep2 <- as.matrix(yrep[rowsrandom, ])
 
 color_scheme_set("brightblue")
 
-ppc_dens_overlay(y, yrep)
+ppc_dens_overlay(y, yrep2)
 ppc_hist(y, yrep2)
 ppc_ecdf_overlay(y, yrep)
 
@@ -123,7 +144,6 @@ prop_gones <- function(x) mean(x == 1)
 prop_gones(y) # check proportion of values greater tha zero in y
 ppc_stat(y, yrep, stat = "prop_gzero")
 ppc_stat(y, yrep, stat = "prop_gones")
-ppc_stat(y, yrep, stat = "mean")
 ppc_stat(y, yrep, stat = "sd")
 
 # Shiny checks ------------------------------------------------------------

@@ -1,5 +1,5 @@
 #' ---
-#' title: "Simple Bernoulli Example"
+#' title: "Simple Multinomial Example"
 #' author: Andrés Gutiérrez
 #' date: "22th May 2021"
 #' ---
@@ -18,17 +18,20 @@ options(width = 90)
 # data and simulated model ----------------------------------------------------------
 
 #' # Generate data
-n <- 10 # Tamaño de muestra
-m <- sample.int(30, n, replace = TRUE) # Número de ensayos
-theta <- 0.2 # parámetro de éxito 
-y <- rbinom(n, m, theta) # éxitos (hits)
-sample_data <- list(n = n, m = m, y = y)
+n <- 500 # Tamaño de muestra
+p <- 3  # Número de categorías
+theta <- c(0.2, 0.45, 0.35) # parámetros de éxito 
+sum(theta)
+y <- t(rmultinom(n = n, size = 1, prob = theta))
+#colMeans(y)
+
+sample_data <- list(n = n, p = p, y = y)
 
 # STAN fit ----------------------------------------------------------------
 
 #' # Draw from posterior distribution
 #+ results='hide'
-fit <- stan("1. uniparamétricos/Binomial.stan", 
+fit <- stan("2. multiparamétricos/Multinomial.stan", 
             data = sample_data)
 
 #' ## Posterior summary and convergence diagnostics

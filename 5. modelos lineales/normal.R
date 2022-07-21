@@ -28,16 +28,15 @@ a <- 2
 b <- 3
 sigma <- 1
 y <- a + b * x + rnorm(N, 0, sigma)
-simple_data <- list(N = N, x = x, y = y, sigma = sigma)
+sample_data <- list(N = N, x = x, y = y, sigma = sigma)
 
 # STAN fit ----------------------------------------------------------------
 
 #' # Draw from posterior distribution
 # results='hide'
 fit <- stan("5. modelos lineales/normal.stan", 
-            data = simple_data, 
-            verbose = TRUE,
-            iter = 200)
+            data = sample_data, 
+            verbose = TRUE)
 
 #' ## Posterior summary and convergence diagnostics
 print(fit, digits = 2)
@@ -133,7 +132,7 @@ mcmc_acf(posterior, pars = thetapars, lags = 10)
 
 sims <- as.data.frame(fit)
 yrep <- as.matrix(sims[, c(4: 33)])
-rowsrandom <- sample(nrow(yrep), 20)
+rowsrandom <- sample(nrow(yrep), 200)
 yrep2 <- yrep[rowsrandom, ]
 
 color_scheme_set("brightblue")
@@ -154,6 +153,8 @@ prop_gzero(y) # check proportion of values greater tha zero in y
 ppc_stat(y, yrep, stat = "prop_gzero")
 ppc_stat(y, yrep, stat = "max")
 ppc_stat(y, yrep, stat = "min")
+ppc_stat(y, yrep, stat = "mean")
+ppc_stat(y, yrep, stat = "sd")
 ppc_stat_2d(y, yrep2)
 ppc_stat(y, yrep2)
 

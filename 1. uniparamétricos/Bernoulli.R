@@ -1,5 +1,5 @@
 #' ---
-#' title: "Simple Bernoulli Example"
+#' title: "Simple Bernoulli Example" f
 #' author: Andrés Gutiérrez
 #' date: "18th May 2021"
 #' ---

@@ -32,11 +32,26 @@ sample_data <- list(n = n, p = p, y = y, alpha = alpha)
 
 #' # Draw from posterior distribution
 #+ results='hide'
-fit <- stan("2. multiparamétricos/Multinomial.stan", 
+fit <- stan("2. multiparamétricos/Multinomial1.stan", 
             data = sample_data)
 
 #' ## Posterior summary and convergence diagnostics
 print(fit, digits = 2, pars = "theta")
+
+
+# fit <- cmdstan_model(stan_file = "2. multiparamétricos/Multinomial1.stan",
+#                      compile = TRUE)
+# 
+# 
+# fit_mcmc <- fit$sample(
+#   data = sample_data,
+#   seed = 123,
+#   chains = 4,
+#   parallel_chains = 4
+# )
+
+
+
 
 # Plotting the MCMC -------------------------------------------------------
 posterior <- as.array(fit)

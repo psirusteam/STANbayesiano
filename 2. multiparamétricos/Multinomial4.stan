@@ -1,30 +1,43 @@
 data {
-  int<lower=0> d; // número de dominios 
-  int<lower=0> p; // categorías
-  int y[d, p]; // matriz de datos
-  vector[p] alpha;
+  int<lower=1> D; // número de dominios 
+  int<lower=1> P; // categorías
+  int<lower=1> K; // cantidad de regresores
+  int y[D, P]; // matriz de datos
+  matrix[D, K] X; // matriz de covariables
 }
+  
 
 parameters {
-  matrix[d,p] beta;// vector de parámetros 
-  simplex[d] theta[p]
+  matrix[P-1, K] beta;// matriz de parámetros 
 }
 
-// transformed parameters {
-//   real delta;
-//   delta = theta[1] - theta[2];
-// }
-
-model {
-  for(i in 1:d){
-   theta[i,] ~ dirichlet(alpha);
-   y[i, ] ~ multinomial(theta[i,]); 
+transformed parameters {
+  simplex[P] theta[D];// vector de parámetros;
+  real num[D, P];
+  real den[D];
+  for(d in 1:D){
+    num[d, 1] = 1;
+    for(p in 2:P){
+      num[d, p] = exp(X[d, ] * beta[p-1, ]');
+    }
+    den[d] = sum(num[d, ]);
+  }
+  
+  for(d in 1:D){
+    for(p in 2:P){
+    theta[d, p] = num[d, p]/den[d];
+    }
+    theta[d, 1] = 1/den[d];
   }
 }
 
-// generated quantities {
-//   int ypred[k];
-//   int deltapred;
-//   ypred = multinomial_rng(theta, 100);
-//   deltapred = ypred[1] - ypred[2];
-// }
+model {
+  for(p in 2:P){
+    for(k in 1:K){
+      beta[p-1, k] ~ normal(0, 100);
+    }
+  }
+  for(d in 1:D){
+      target += multinomial_lpmf(y[d, ] | theta[d, ]); 
+  }
+}

@@ -16,55 +16,63 @@ rstan_options(auto_write = TRUE)
 options(width = 90)
 
 # data and simulated model ----------------------------------------------------------
-# Definir parámetros 
-d <- 10 # número de dominios.
-n <- round(runif(n = d, 400,500)) # Tamaño de muestra por dominio
-p <- 3  # Número de categorías
+# Definir parámetros
+D <- 10 # número de dominios.
+n <- round(runif(n = D, 200, 500)) # Tamaño de muestra por dominio
+P <- 3  # Número de categorías
 
 ## parametros de regresión.
-k <- 2 # número de variables regresoras.
-beta <- matrix(c(1,2,3,4,5,6),p,k)/500 # coefientes del modelo. 
-X <-  cbind(1, matrix(rnorm(d,50,10),d,(k-1)))  #variables regresoras 
+K <- 2 # número de variables regresoras.
+beta <- matrix(c(-1, -2, 1, 1), P-1, K) # coefientes del modelo.
+X <- cbind(1, matrix(rnorm(D, 5, 3), 
+                     D, (K - 1)))  #variables regresoras
 ### Calculando el denominador
-Denominador <- 1 + exp((crossprod(t(X),(beta[1,])))) + 
-                   exp((crossprod(t(X),(beta[2,]))))
+Denominador <- 1 + exp((crossprod(t(X), (beta[1, ])))) +
+  exp((crossprod(t(X), (beta[2, ]))))
 
 # Calculando la matrix y
-theta <- cbind(1/Denominador, 
-              exp((crossprod(t(X),(beta[1,]))))/Denominador,
-              exp((crossprod(t(X),(beta[2,]))))/Denominador)
+theta <- cbind(1 / Denominador,
+               exp((crossprod(t(X), (beta[1, ])))) / Denominador,
+               exp((crossprod(t(X), (beta[2, ])))) / Denominador)
+
+theta
 rowSums(theta)
-y <- matrix(NA, d,p)
-for(ii in 1:d){
-  y[ii,] <- t(rmultinom(n = 1, size = n[ii], prob = theta[ii,]))
+y <- matrix(NA, D, P)
+for (ii in 1:D) {
+  y[ii, ] <- t(rmultinom(n = 1, size = n[ii], prob = theta[ii, ]))
 }
 rowSums(y)
-alpha = rep(0.5, 3)
-sample_data <- list(d = d, p = p, y = y, alpha = alpha)
+
+sample_data <- list(D = D,
+                    P = P,
+                    K = K,
+                    y = y,
+                    X = X)
 
 
 # STAN fit ----------------------------------------------------------------
 
 #' # Draw from posterior distribution
 #+ results='hide'
-# fit <- stan("2. multiparamétricos/Multinomial.stan", 
-#             data = sample_data)
+fit <- stan("2. multiparamétricos/Multinomial4.stan",
+            data = sample_data)
 
-fit <- cmdstan_model(stan_file = "2. multiparamétricos/Multinomial2.stan",
-                     compile = TRUE)
-
-
-fit_mcmc <- fit$sample(
-  data = sample_data,
-  seed = 123,
-  chains = 4,
-  parallel_chains = 4
-)
-
-fit_mcmc$print("theta")
+# fit <-
+#   cmdstan_model(stan_file = "2. multiparamétricos/Multinomial4.stan",
+#                 compile = TRUE)
+# 
+# 
+# fit_mcmc <- fit$sample(
+#   data = sample_data,
+#   seed = 123,
+#   chains = 4,
+#   parallel_chains = 4
+# )
+#fit_mcmc$print("theta")
 
 #' ## Posterior summary and convergence diagnostics
 print(fit, digits = 2, pars = "theta")
+print(fit, digits = 2, pars = "beta")
 
 # Plotting the MCMC -------------------------------------------------------
 posterior <- as.array(fit)
@@ -82,18 +90,22 @@ mcmc_intervals(posterior, pars = thetapars)
 mcmc_intervals(posterior, pars = ypredpars)
 
 mcmc_areas(
-  posterior, 
+  posterior,
   pars = thetapars,
-  prob = 0.8, # 80% intervals
-  prob_outer = 0.99, # 99%
+  prob = 0.8,
+  # 80% intervals
+  prob_outer = 0.99,
+  # 99%
   point_est = "mean"
 )
 
 mcmc_areas(
-  posterior, 
+  posterior,
   pars = ypredpars,
-  prob = 0.8, # 80% intervals
-  prob_outer = 0.99, # 99%
+  prob = 0.8,
+  # 80% intervals
+  prob_outer = 0.99,
+  # 99%
   point_est = "mean"
 )
 
@@ -110,7 +122,7 @@ mcmc_dens(posterior, pars = thetapars)
 mcmc_dens_overlay(posterior, pars = thetapars)
 
 color_scheme_set("teal")
-mcmc_violin(posterior, 
+mcmc_violin(posterior,
             pars = thetapars, probs = c(0.1, 0.5, 0.9))
 
 color_scheme_set("blue")
@@ -118,10 +130,11 @@ mcmc_trace(posterior, pars = thetapars)
 mcmc_trace(posterior, pars = ypredpars)
 
 color_scheme_set("mix-blue-red")
-mcmc_trace(posterior, pars = thetapars, 
+mcmc_trace(posterior,
+           pars = thetapars,
            facet_args = list(ncol = 1, strip.position = "left"))
 
-mcmc_trace_highlight(posterior, pars = thetapars, 
+mcmc_trace_highlight(posterior, pars = thetapars,
                      highlight = 3)
 
 # Visual MCMC diagnostics -------------------------------------------------
@@ -141,7 +154,7 @@ mcmc_acf(posterior, pars = thetapars, lags = 10)
 sims <- as.data.frame(fit)
 yrep <- as.matrix(sims[, 2:31])
 rowsrandom <- sample(nrow(yrep), 20)
-yrep2 <- as.matrix(yrep[rowsrandom, ])
+yrep2 <- as.matrix(yrep[rowsrandom,])
 
 color_scheme_set("brightblue")
 
@@ -149,9 +162,11 @@ ppc_dens_overlay(y, yrep)
 ppc_hist(y, yrep2)
 ppc_ecdf_overlay(y, yrep)
 
-prop_gzero <- function(x) mean(x == 0)
+prop_gzero <- function(x)
+  mean(x == 0)
 prop_gzero(y) # check proportion of values greater tha zero in y
-prop_gones <- function(x) mean(x == 1)
+prop_gones <- function(x)
+  mean(x == 1)
 prop_gones(y) # check proportion of values greater tha zero in y
 ppc_stat(y, yrep, stat = "prop_gzero")
 ppc_stat(y, yrep, stat = "prop_gones")

@@ -57,18 +57,18 @@ sample_data <- list(D = D,
 fit <- stan("2. multiparamétricos/Multinomial4.stan",
             data = sample_data)
 
-# fit <-
-#   cmdstan_model(stan_file = "2. multiparamétricos/Multinomial4.stan",
-#                 compile = TRUE)
-# 
-# 
-# fit_mcmc <- fit$sample(
-#   data = sample_data,
-#   seed = 123,
-#   chains = 4,
-#   parallel_chains = 4
-# )
-#fit_mcmc$print("theta")
+fit <-
+  cmdstan_model(stan_file = "2. multiparamétricos/Multinomial4.stan",
+                compile = TRUE)
+
+
+fit_mcmc <- fit$sample(
+  data = sample_data,
+  seed = 123,
+  chains = 4,
+  parallel_chains = 4
+)
+fit_mcmc$print("theta")
 
 #' ## Posterior summary and convergence diagnostics
 print(fit, digits = 2, pars = "theta")

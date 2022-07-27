@@ -76,20 +76,20 @@ sample_data <- list(D = D,
 #+ results='hide'
 
 
-fit <- stan("2. multiparamétricos/Multinomial7a.stan",            
-            data = sample_data)
+# fit <- stan("2. multiparamétricos/Multinomial7a.stan",            
+#             data = sample_data)
 
-# fit <-
-#   cmdstan_model(stan_file = "2. multiparamétricos/Multinomial6.stan",
-#                 compile = TRUE)
-# 
-# 
-# fit_mcmc <- fit$sample(
-#   data = sample_data,
-#   seed = 123,
-#   chains = 4,
-#   parallel_chains = 4
-# )
+fit <-
+  cmdstan_model(stan_file = "2. multiparamétricos/Multinomial7a.stan",
+                compile = TRUE)
+
+
+fit_mcmc <- fit$sample(
+  data = sample_data,
+  seed = 123,
+  chains = 4,
+  parallel_chains = 4
+)
 
 # fit_mcmc$print("sigma_u1")
 # fit_mcmc$print("sigma_u2")

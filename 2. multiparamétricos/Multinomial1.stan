@@ -3,6 +3,9 @@ data {
   int<lower=0> p; // categorías
   int y[n, p]; // matriz de datos
   vector[p] alpha;
+  // predicción
+   int <lower = 1> ns;
+   int   nd;
 }
 
 parameters {
@@ -21,9 +24,10 @@ model {
   }
 }
 
-// generated quantities {
-//   int ypred[k];
-//   int deltapred;
-//   ypred = multinomial_rng(theta, 100);
-//   deltapred = ypred[1] - ypred[2];
-// }
+generated quantities {
+  int<lower=0> ypred[ns, p]; 
+  for (ii in 1:ns) {
+    ypred[ii] = multinomial_rng(theta, 500);
+  }
+ 
+}

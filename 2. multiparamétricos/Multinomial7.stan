@@ -1,9 +1,11 @@
 data {
   int<lower=1> D; // número de dominios 
+  int<lower=1> D1; // número de dominios 
   int<lower=1> P; // categorías
   int<lower=1> K; // cantidad de regresores
   int y[D, P]; // matriz de datos
   matrix[D, K] X; // matriz de covariables
+  matrix[D1, K] Xp; // matriz de covariables
 }
   
 
@@ -58,10 +60,34 @@ model {
 
   
 generated quantities {
+  // predict 
+  simplex[P] theta_p[D1];// vector de parámetros;
+  real num1[D1, P];
+  real den1[D1];
+  
   matrix[2, 2] Omega;
+  matrix[D1, P] yp;
   vector<lower=0>[2] sdcomprobar;
   sdcomprobar[1] = sd(u[1, ]);
   sdcomprobar[2] = sd(u[2, ]);
 
   Omega = L_u * L_u'; // so that it return the correlation matrix
+// predicción 
+for(d in 1:D1){
+    num1[d, 1] = 1;
+    num1[d, 2] = exp(Xp[d, ] * beta[1, ]' ) ;
+    num1[d, 3] = exp(Xp[d, ] * beta[2, ]' ) ;
+    
+    den1[d] = sum(num1[d, ]);
+  }
+  
+  for(d in 1:D1){
+    for(p in 2:P){
+    theta_p[d, p] = num1[d, p]/den1[d];
+    }
+    theta_p[d, 1] = 1/den1[d];
+   //yp[d,] = multinomial_rng(theta_p[d, ]');
+  }
+  
+  
 }

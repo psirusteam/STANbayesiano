@@ -21,6 +21,7 @@ options(width = 90)
 # data and simulated model ----------------------------------------------------------
 # Definir parámetros
 D <- 300 # número de dominios.
+D1 <- 100 # número de dominios.
 n <- round(runif(n = D, 200, 500)) # Tamaño de muestra por dominio
 P <- 3  # Número de categorías
 
@@ -65,11 +66,18 @@ for (ii in 1:D) {
 }
 rowSums(y)
 
+Xp <- cbind(1, matrix(rnorm(D1, 5, 3), 
+                     D1, (K - 1)))  #variables regresoras
+
+
+
 sample_data <- list(D = D,
                     P = P,
                     K = K,
                     y = y,
-                    X = X)
+                    X = X,
+                    Xp = Xp,
+                    D1 = D1)
 # STAN fit ----------------------------------------------------------------
 
 #' # Draw from posterior distribution
@@ -80,7 +88,7 @@ sample_data <- list(D = D,
 #             data = sample_data)
 
 fit <-
-  cmdstan_model(stan_file = "2. multiparamétricos/Multinomial7a.stan",
+  cmdstan_model(stan_file = "2. multiparamétricos/Multinomial7.stan",
                 compile = TRUE)
 
 
@@ -95,6 +103,20 @@ fit_mcmc <- fit$sample(
 # fit_mcmc$print("sigma_u2")
 # fit_mcmc$print("beta")
 # fit_mcmc$print("theta")
+draws <- fit_mcmc$draws()
+theta_fit <- as_draws_df(draws) %>% select(matches("theta\\[")) %>% 
+  colMeans() %>% 
+  matrix(., nrow = D, ncol = P, byrow = FALSE)
+
+round(theta - theta_fit,3)
+
+theta_p <- as_draws_df(draws) %>% select(matches("theta_p")) %>% 
+  colMeans() %>% 
+  matrix(., nrow = D1, ncol = P, byrow = FALSE)
+
+rowSums(theta_p)
+
+
 #' ## Posterior summary and convergence diagnostics
 #' 
 print(fit, digits = 2, pars = "theta")

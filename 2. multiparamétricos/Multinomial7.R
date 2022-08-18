@@ -20,8 +20,8 @@ options(width = 90)
 
 # data and simulated model ----------------------------------------------------------
 # Definir parámetros
-D <- 300 # número de dominios.
-D1 <- 100 # número de dominios.
+D <- 100 # número de dominios.
+D1 <- 50 # número de dominios.
 n <- round(runif(n = D, 200, 500)) # Tamaño de muestra por dominio
 P <- 3  # Número de categorías
 
@@ -88,7 +88,7 @@ sample_data <- list(D = D,
 #             data = sample_data)
 
 fit <-
-  cmdstan_model(stan_file = "2. multiparamétricos/Multinomial7.stan",
+  cmdstan_model(stan_file = "2. multiparamétricos/Multinomial7a.stan",
                 compile = TRUE)
 
 
@@ -100,14 +100,16 @@ fit_mcmc <- fit$sample(
 )
 
 # fit_mcmc$print("sigma_u1")
-# fit_mcmc$print("sigma_u2")
+# fit_mcmc$print("sigma_u")
 # fit_mcmc$print("beta")
 # fit_mcmc$print("theta")
+# fit_mcmc$print("sdcomprobar")
 draws <- fit_mcmc$draws()
 theta_fit <- as_draws_df(draws) %>% select(matches("theta\\[")) %>% 
   colMeans() %>% 
   matrix(., nrow = D, ncol = P, byrow = FALSE)
 
+rowSums(theta_fit)
 round(theta - theta_fit,3)
 
 theta_p <- as_draws_df(draws) %>% select(matches("theta_p")) %>% 
@@ -115,6 +117,18 @@ theta_p <- as_draws_df(draws) %>% select(matches("theta_p")) %>%
   matrix(., nrow = D1, ncol = P, byrow = FALSE)
 
 rowSums(theta_p)
+round(theta_p,3)
+
+z_u <- as_draws_df(draws) %>% select(matches("z_u")) %>% 
+  colMeans() %>% 
+  matrix(., nrow = D, ncol = P-1, byrow = FALSE)
+
+rowSums(theta_p)
+round(theta_p,3)
+
+
+
+
 
 
 #' ## Posterior summary and convergence diagnostics

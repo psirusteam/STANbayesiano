@@ -1,0 +1,73 @@
+---
+title: "Demostraciones"
+author: ""
+date: "2022-10-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Demostración 1 
+Sea $U_{i,t}=\sigma \tilde{U}_{i,t}$ y $\tilde{U}_{i,t} = \rho\tilde{U}_{i,t-1} + \epsilon_{i,t}$ donde $\epsilon_{i,t} ~ \sim N(0, 1-\rho^2)$.
+
+Ahora, $(1-\rho B)\tilde{U}_{i,t}=\epsilon_{i,t}$, con el operador $B$ definido como $BX_t = X_{t-1}$.
+
+Entonces, $\tilde{U}_{i,t} = \rho B \tilde{U}_{i,t} + \epsilon_{i,t}$ , luego $(1-\rho B)\tilde{U}_{i,t} = \epsilon_{i,t}$ por consiguiente,
+
+$$\tilde{U}_{i,t} = \frac{1}{(1-\rho B)} \epsilon_{i,t}$$ con $\mid \rho\mid < 1$, donde 
+
+$$
+\frac{1}{(1-\rho B)} = 1 + \rho B + \rho^2 B^2 + \rho^3 B^3 + \cdots
+$$
+ahora, 
+$$
+1 =  (1-\rho B)(1 + \rho B + \rho^2 B^2 + \rho^3 B^3 + \cdots)
+$$
+luego,
+$$
+\begin{eqnarray*}
+\tilde{U}_{i,t} &=& (1 + \rho B + \rho^2 B^2 + \rho^3 B^3 + \cdots)\epsilon_{i,t}\\
+&=&\epsilon_{i,t} + \rho \epsilon_{i,t-1} + \rho^2 \epsilon_{i,t-2} + \rho^3 \epsilon_{i,t-3} + \cdots)
+\end{eqnarray*}
+$$
+
+Así, $E(\tilde{U}_{i,t}) =0$  y 
+$$
+\begin{eqnarray*}
+Var\left(U_{i,t}\right) & = & Var\left(\epsilon_{i,t}\right)+\rho^{2}Var\left(\epsilon_{i,t-1}\right)+\rho^{4}Var\left(\epsilon_{i,t-2}\right)+\cdots\\
+ & = & Var\left(\epsilon_{i,t}\right)\left(\frac{1}{1-\rho^{2}}\right)\\
+ & = & \left(1-\rho^{2}\right)\left(\frac{1}{1-\rho^{2}}\right)=1
+\end{eqnarray*}
+$$
+
+Así, $Var(U_{i,t})=Var(\sigma U_{i,t})=\sigma^2$ y $E(U_{i,t}) = E(\sigma U_{i,t}) = 0$
+
+
+## Demostración 2 
+
+
+Vestorialmente, 
+
+Sean $\boldsymbol{U}_{i,t}$ y $\tilde{\boldsymbol{U}}_{it}$ vectores.
+Sea $\tilde{\boldsymbol{U}}_{it}=A\tilde{\boldsymbol{U}}_{i,t-1}+\boldsymbol{\epsilon}_{i,t}$,
+con $\boldsymbol{\epsilon}_{i,t}\sim N\left(\boldsymbol{0},\Sigma_{e}\right)$. 
+
+$Var\left(\tilde{\boldsymbol{U}_{i,t}}\right)=AVar\left(\tilde{U}_{i,t}\right)A^{T}+\Sigma_{e}$,
+si $Var\left(\tilde{\boldsymbol{U}}_{i,t}\right)=I$ entonces $I=AA^{T}+\Sigma_{e}$
+así, $\Sigma_{e}=I-AA^{T}$.
+
+$$\boldsymbol{U}_{i,t}=\Sigma^{\frac{1}{2}}\tilde{\boldsymbol{U}}_{i,t}$$,
+así 
+$$Var\left(U_{i,t}\right)=\Sigma^{\frac{1}{2}}Var\left(\tilde{\boldsymbol{U}}_{i,t}\right)\Sigma^{\frac{1}{2}}=\Sigma$$
+
+
+
+
+
+
+
+
+
+
